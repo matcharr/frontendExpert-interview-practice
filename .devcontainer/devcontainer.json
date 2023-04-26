@@ -1,3 +1,33 @@
+/*
+  This configuration defines a JavaScript React development container that includes:
+
+  - Node.js (based on the mcr.microsoft.com/devcontainers/javascript-node:0-18-bullseye image)
+  - JSHint (using ghcr.io/devcontainers-contrib/features/jshint:2)
+  - Forwarding of port 3000
+  - Running "pnpm install" after container creation
+  - Host requirements: 2 CPUs, 4GB memory, and 32GB storage
+  - Customizations for VS Code extensions, including:
+    - Prettier
+    - ESLint
+    - Auto Rename Tag
+    - Code Runner
+    - Code Spell Checker
+    - Docker
+    - ES7+ React/Redux/React-Native snippets
+    - GitLens
+    - HTML CSS Support
+    - Indent-Rainbow
+    - JavaScript (ES6) code snippets
+    - TypeScript and JavaScript Nightly
+    - Material Icon Theme
+    - GitHub Copilot
+    - Gitpod Theme
+    - Remote Development
+    - Git Extension Pack
+    - Node.js Extension Pack
+    - Markdown All in One
+*/
+
 {
   "name": "JavaScript React Dev Container",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:0-18-bullseye",
@@ -7,9 +37,9 @@
   "forwardPorts": [3000],
   "postCreateCommand": "pnpm install",
   "hostRequirements": {
-    "cpus": 16,
-    "memory": "32gb",
-    "storage": "128gb"
+    "cpus": 2,
+    "memory": "4gb",
+    "storage": "32gb"
   },
   "customizations": {
     "vscode": {

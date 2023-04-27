@@ -1,13 +1,23 @@
 function createDom(root) {
-  // Write your code here.
-  let dom = document.createElement(root.name);
-  for (let key in root.attributes) {
-    dom.setAttribute(key, root.attributes[key]);
+  const node = document.createElement(root.type);
+
+  if (root.attributes) {
+    for (const [attributeName, value] of Object.entries(root.attributes)) {
+      node.setAttribute(attributeName, value);
+    }
   }
-  for (let i = 0; i < root.children.length; i++) {
-    dom.appendChild(createDom(root.children[i]));
+
+  if (root.children) {
+    root.children.forEach((child) => {
+      node.appendChild(
+        typeof child === "string"
+          ? document.createTextNode(child)
+          : createDom(child)
+      );
+    });
   }
-  return dom;
+
+  return node;
 }
 
 // Do not edit the line below.

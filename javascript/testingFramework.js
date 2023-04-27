@@ -36,27 +36,23 @@ class ExpectFunctions {
 
   toExist() {
     if (this.actual == null) {
-      throw new Error(
-        `expected value to exist but got ${this.stringifiedActual}`
-      );
+      throw `expected value to exist but got ${this.stringifiedActual}`;
     }
   }
 
   toBe(expected) {
     if (this.actual !== expected) {
-      throw new Error(
-        `expected ${this.stringifiedActual} to be ${JSON.stringify(expected)}`
-      );
+      throw `expected ${this.stringifiedActual} to be ${JSON.stringify(
+        expected
+      )}`;
     }
   }
 
   toBeType(type) {
     if (typeof this.actual !== type) {
-      throw new Error(
-        `expected ${
-          this.stringifiedActual
-        } to be of type ${type} but got ${typeof this.actual}`
-      );
+      throw `expected ${
+        this.stringifiedActual
+      } to be of type ${type} but got ${typeof this.actual}`;
     }
   }
 }

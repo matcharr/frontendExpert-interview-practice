@@ -7,7 +7,6 @@ const SUBMISSIONS_API_BASE_URL =
 export default function QuestionList() {
   const [questions, submissions] = useQuestionsAndSubmissions();
   const questionsByCategory = getQuestionsByCategory(questions);
-  const submissionsByQuestion = getSubmissionsByQuestion(submissions);
   const categories = Object.keys(questionsByCategory);
 
   return (
@@ -17,18 +16,20 @@ export default function QuestionList() {
           key={category}
           category={category}
           questions={questionsByCategory[category]}
-          submissionsByQuestion={submissionsByQuestion}
+          submissions={submissions}
         />
       ))}
     </>
   );
 }
 
-function Category({ category, questions, submissionsByQuestion }) {
+function Category({ category, questions, submissions }) {
   const totalQuestions = questions.length;
   const numQuestionsCorrect = questions.reduce((sum, question) => {
-    return submissionsByQuestion[question.id] === "CORRECT" ? sum + 1 : sum;
+    const submissionStatus = submissions[question.id];
+    return submissionStatus === "CORRECT" ? sum + 1 : sum;
   }, 0);
+
   return (
     <div className="category">
       <h2>
@@ -38,16 +39,14 @@ function Category({ category, questions, submissionsByQuestion }) {
         <Question
           key={question.id}
           question={question}
-          submissionsByQuestion={submissionsByQuestion}
+          submissionStatus={submissions[question.id]}
         />
       ))}
-      ;
     </div>
   );
 }
 
-function Question({ question, submissionsByQuestion }) {
-  const submissionStatus = submissionsByQuestion[question.id];
+function Question({ question, submissionStatus }) {
   const statusClass =
     submissionStatus == null
       ? "unattempted"
@@ -63,21 +62,25 @@ function Question({ question, submissionsByQuestion }) {
 
 function useQuestionsAndSubmissions() {
   const [questions, setQuestions] = useState([]);
-  const [submissions, setSubmissions] = useState([]);
+  const [submissions, setSubmissions] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
-      const [questionResponse, submissionsResponse] = await Promise.all([
-        fetch(QUESTIONS_API_BASE_URL),
-        fetch(SUBMISSIONS_API_BASE_URL),
-      ]);
-      const [questions, submissions] = await Promise.all([
-        questionResponse.json(),
-        submissionsResponse.json(),
-      ]);
+      try {
+        const [questionResponse, submissionsResponse] = await Promise.all([
+          fetch(QUESTIONS_API_BASE_URL),
+          fetch(SUBMISSIONS_API_BASE_URL),
+        ]);
+        const [questions, submissions] = await Promise.all([
+          questionResponse.json(),
+          submissionsResponse.json(),
+        ]);
 
-      setQuestions(questions);
-      setSubmissions(submissions);
+        setQuestions(questions);
+        setSubmissions(getSubmissionsByQuestion(submissions));
+      } catch (error) {
+        console.error("Error fetching questions and submissions:", error);
+      }
     };
 
     fetchData();
@@ -87,22 +90,17 @@ function useQuestionsAndSubmissions() {
 }
 
 function getQuestionsByCategory(questions) {
-  const questionsByCategory = {};
-  questions.forEach(({ category, ...question }) => {
-    if (!questionsByCategory.hasOwnProperty(category)) {
-      questionsByCategory[category] = [];
-    }
-    questionsByCategory[category].push(question);
-  });
-
-  return questionsByCategory;
+  return questions.reduce((questionsByCategory, question) => {
+    const { category, ...rest } = question;
+    questionsByCategory[category] = questionsByCategory[category] || [];
+    questionsByCategory[category].push(rest);
+    return questionsByCategory;
+  }, {});
 }
 
 function getSubmissionsByQuestion(submissions) {
-  const submissionsByQuestion = {};
-  submissions.forEach(({ questionId, status }) => {
+  return submissions.reduce((submissionsByQuestion, { questionId, status }) => {
     submissionsByQuestion[questionId] = status;
-  });
-
-  return submissionsByQuestion;
+    return submissionsByQuestion;
+  }, {});
 }

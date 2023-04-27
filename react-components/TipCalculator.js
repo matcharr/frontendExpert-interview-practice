@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 
 export default function TipCalculator() {
   const [bill, setBill] = useState(50);
@@ -6,12 +6,26 @@ export default function TipCalculator() {
   const [numberOfPeople, setNumberOfPeople] = useState(1);
 
   const totalTip = useMemo(() => {
-    return (bill * tipPercentage * 0.01).toFixed(2) || "-";
+    const calculatedTip = (bill * tipPercentage * 0.01).toFixed(2);
+    return calculatedTip || "-";
   }, [bill, tipPercentage]);
 
   const tipPerPerson = useMemo(() => {
-    return (totalTip / numberOfPeople).toFixed(2) || "-";
+    const calculatedTipPerPerson = (totalTip / numberOfPeople).toFixed(2);
+    return calculatedTipPerPerson || "-";
   }, [totalTip, numberOfPeople]);
+
+  const handleBillChange = (e) => {
+    setBill(e.target.value);
+  };
+
+  const handleTipPercentageChange = (e) => {
+    setTipPercentage(e.target.value);
+  };
+
+  const handleNumberOfPeopleChange = (e) => {
+    setNumberOfPeople(e.target.value);
+  };
 
   return (
     <>
@@ -21,7 +35,7 @@ export default function TipCalculator() {
           id="bill"
           type="number"
           value={bill}
-          onChange={(e) => setBill(e.target.value)}
+          onChange={handleBillChange}
         />
       </label>
 
@@ -31,7 +45,7 @@ export default function TipCalculator() {
           id="tip-percentage"
           type="number"
           value={tipPercentage}
-          onChange={(e) => setTipPercentage(e.target.value)}
+          onChange={handleTipPercentageChange}
         />
       </label>
 
@@ -41,7 +55,7 @@ export default function TipCalculator() {
           id="number-of-people"
           type="number"
           value={numberOfPeople}
-          onChange={(e) => setNumberOfPeople(e.target.value)}
+          onChange={handleNumberOfPeopleChange}
         />
       </label>
 
